@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://www.lifestack.cn/luna"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.lifestack.cn/luna"
+            elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xsd:element name="sev">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+            <xsd:attribute name="name" type="xsd:string" use="optional"/>
+            <xsd:attribute name="port" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="cli">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:ID" use="optional" />
+            <xsd:attribute name="service" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="registry">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+            <xsd:attribute name="address" type="xsd:string" use="required"/>
+            <xsd:attribute name="isRoundRobin" type="xsd:string" use="optional"/>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>
