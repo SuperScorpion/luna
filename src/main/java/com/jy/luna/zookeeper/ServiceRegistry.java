@@ -1,6 +1,6 @@
 package com.jy.luna.zookeeper;
 
-import com.jy.luna.stuff.LunaConfigure;
+import com.jy.luna.stuff.common.LunaConfigure;
 import com.jy.luna.xsd.LunaXsdHandler;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;

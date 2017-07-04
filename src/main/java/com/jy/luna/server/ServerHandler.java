@@ -2,7 +2,7 @@ package com.jy.luna.server;
 
 import com.jy.luna.protocol.RpcRequest;
 import com.jy.luna.protocol.RpcResponse;
-import com.jy.luna.stuff.LunaConfigure;
+import com.jy.luna.stuff.common.LunaConfigure;
 import com.jy.luna.stuff.exception.LunaException;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;

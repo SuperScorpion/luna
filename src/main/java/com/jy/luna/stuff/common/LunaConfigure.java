@@ -1,4 +1,4 @@
-package com.jy.luna.stuff;
+package com.jy.luna.stuff.common;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

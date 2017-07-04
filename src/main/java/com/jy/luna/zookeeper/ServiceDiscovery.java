@@ -2,7 +2,7 @@ package com.jy.luna.zookeeper;
 
 import com.jy.luna.client.ClientHandlerManager;
 import com.jy.luna.client.ClientStuff;
-import com.jy.luna.stuff.LunaConfigure;
+import com.jy.luna.stuff.common.LunaConfigure;
 import com.jy.luna.xsd.LunaXsdHandler;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;

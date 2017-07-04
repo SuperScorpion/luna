@@ -1,6 +1,6 @@
 package com.jy.luna.xsd;
 
-import com.jy.luna.stuff.LunaUtils;
+import com.jy.luna.stuff.common.LunaUtils;
 import com.jy.luna.stuff.exception.LunaException;
 import com.jy.luna.xsd.element.Cli;
 import com.jy.luna.xsd.element.Registry;
