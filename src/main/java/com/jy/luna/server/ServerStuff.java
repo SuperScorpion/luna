@@ -1,11 +1,12 @@
 package com.jy.luna.server;
 
-import com.jy.luna.commons.LunaUtils;
-import com.jy.luna.commons.Stuff;
 import com.jy.luna.protocol.RpcDecoder;
 import com.jy.luna.protocol.RpcEncoder;
 import com.jy.luna.protocol.RpcRequest;
 import com.jy.luna.protocol.RpcResponse;
+import com.jy.luna.stuff.LunaConfigure;
+import com.jy.luna.stuff.LunaUtils;
+import com.jy.luna.stuff.exception.LunaException;
 import com.jy.luna.xsd.LunaXsdHandler;
 import com.jy.luna.zookeeper.ServiceRegistry;
 import io.netty.bootstrap.ServerBootstrap;
@@ -19,12 +20,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.springframework.context.ApplicationContext;
 
-import java.net.InetSocketAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,14 +49,14 @@ public class ServerStuff {
             }
         }
 
-        if(LunaUtils.isBlank(LunaUtils.gainLocalHostIp()) || LunaUtils.isBlank(LunaXsdHandler.port)) throw new RuntimeException("Luna: local ip or port is a need");
+        if(LunaUtils.isBlank(LunaUtils.gainLocalHostIp()) || LunaUtils.isBlank(LunaXsdHandler.port)) throw new LunaException("Luna: local ip or port is a need");
 
         this.serverAddress = LunaUtils.gainLocalHostIp() + ":" + LunaXsdHandler.port;
     }
 
 
     public void connectServerProcessor() {
-        Stuff.execuService.submit(() -> {
+        LunaConfigure.execuService.submit(() -> {
             EventLoopGroup bossGroup = new NioEventLoopGroup();
             EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -96,46 +92,5 @@ public class ServerStuff {
                 bossGroup.shutdownGracefully();
             }
         });
-    }
-
-    public static void main(String[] args) throws UnknownHostException, SocketException {
-//        ServerStuff sstf = new ServerStuff();
-        try {
-//            sstf.afterPropertiesSet();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        InetSocketAddress isa = new InetSocketAddress("localhost", 3333);
-        InetSocketAddress isa2 = new InetSocketAddress("localhost", 3333);
-
-        Stuff sf = new Stuff();
-        Stuff sf2 = new Stuff();
-
-        List<Stuff> pc = new ArrayList<>();
-        pc.add(sf);
-        System.out.println(pc.contains(sf2));
-
-        List<InetSocketAddress> p = new ArrayList<>();
-        p.add(isa);
-
-        System.out.println(isa == isa2);
-        System.out.println(p.contains(isa2));
-
-        System.out.println(isa.toString());
-
-        System.out.println(isa.getHostName() + ":" + isa.getPort());
-
-        System.out.println(isa.getHostString());
-        System.out.println(LunaUtils.gainLocalHostIp());
-//        Map fd = new HashMap();
-//        fd.put("a", "1");
-//
-//        Set vb = new HashSet(fd.keySet());
-//        System.out.println(vb.size());
-//
-//        fd.put("b", "2");
-//        System.out.println(vb.size());
-
     }
 }

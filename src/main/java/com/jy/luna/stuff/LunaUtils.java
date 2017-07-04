@@ -1,11 +1,10 @@
-package com.jy.luna.commons;
+package com.jy.luna.stuff;
 
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
+import java.net.*;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Created by neo on 2016/12/4.
@@ -66,8 +65,51 @@ public class LunaUtils {
         return str.substring(0, 1).toLowerCase() + str.substring(1);
     }
 
-    public static void main(String[] args) throws ClassNotFoundException {
-        Class c= Class.forName("com.jy.luna.Label");
-        System.out.println(c.getSimpleName());
+
+
+
+
+
+
+
+    public static void main(String[] args) throws UnknownHostException, SocketException {
+//        ServerStuff sstf = new ServerStuff();
+        try {
+//            sstf.afterPropertiesSet();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        InetSocketAddress isa = new InetSocketAddress("localhost", 3333);
+        InetSocketAddress isa2 = new InetSocketAddress("localhost", 3333);
+
+        LunaConfigure sf = new LunaConfigure();
+        LunaConfigure sf2 = new LunaConfigure();
+
+        List<LunaConfigure> pc = new ArrayList<>();
+        pc.add(sf);
+        System.out.println(pc.contains(sf2));
+
+        List<InetSocketAddress> p = new ArrayList<>();
+        p.add(isa);
+
+        System.out.println(isa == isa2);
+        System.out.println(p.contains(isa2));
+
+        System.out.println(isa.toString());
+
+        System.out.println(isa.getHostName() + ":" + isa.getPort());
+
+        System.out.println(isa.getHostString());
+        System.out.println(LunaUtils.gainLocalHostIp());
+//        Map fd = new HashMap();
+//        fd.put("a", "1");
+//
+//        Set vb = new HashSet(fd.keySet());
+//        System.out.println(vb.size());
+//
+//        fd.put("b", "2");
+//        System.out.println(vb.size());
+
     }
 }

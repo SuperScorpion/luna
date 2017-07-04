@@ -1,12 +1,13 @@
 package com.jy.luna.client;
 
 import com.jy.luna.client.proxy.ProxyFactory;
-import com.jy.luna.commons.LunaUtils;
-import com.jy.luna.commons.Stuff;
 import com.jy.luna.protocol.RpcDecoder;
 import com.jy.luna.protocol.RpcEncoder;
 import com.jy.luna.protocol.RpcRequest;
 import com.jy.luna.protocol.RpcResponse;
+import com.jy.luna.stuff.LunaConfigure;
+import com.jy.luna.stuff.LunaUtils;
+import com.jy.luna.stuff.exception.LunaException;
 import com.jy.luna.xsd.LunaXsdHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -26,7 +27,7 @@ public class ClientStuff {
 
 
     public ClientStuff initProxy2Spring(ApplicationContext applicationContext) {
-        List<String> serviceList = LunaXsdHandler.serviceList;
+        List<String> serviceList = LunaXsdHandler.servicePathList;
         if(serviceList != null && !serviceList.isEmpty()) {
             for(String se : serviceList) {
 
@@ -40,7 +41,7 @@ public class ClientStuff {
                     e.printStackTrace();
                 }
 
-                if(pox == null) throw new RuntimeException("luna: there was an error in the init proxy : " + se);
+                if(pox == null) throw new LunaException("Luna: there was an error in the init proxy : " + se);
 
                 DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
                 beanFactory.registerSingleton(LunaUtils.lowcaseFirst(clz.getSimpleName()), pox);
@@ -53,7 +54,7 @@ public class ClientStuff {
     EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
 
     public void connectServerProcessor(InetSocketAddress remotePeer) throws Exception {
-        Stuff.execuService.submit(() -> {
+        LunaConfigure.execuService.submit(() -> {
             Bootstrap b = new Bootstrap();
             try {
                 b.group(eventLoopGroup).channel(NioSocketChannel.class).handler(
@@ -85,7 +86,7 @@ public class ClientStuff {
                                     rrqt.setRequestId("123456789");
                                     RpcFuture rpcFuture = handler.channelWrite0(rrqt);*/
 
-//                                    Stuff.execuService.submit(new Runnana(rpcFuture));//for test
+//                                    Configure.execuService.submit(new Runnana(rpcFuture));//for test
                                 }
                             }
                         }

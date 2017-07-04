@@ -1,6 +1,6 @@
 package com.jy.luna.zookeeper;
 
-import com.jy.luna.commons.Stuff;
+import com.jy.luna.stuff.LunaConfigure;
 import com.jy.luna.xsd.LunaXsdHandler;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
@@ -37,7 +37,7 @@ public class ServiceRegistry {
     private ZooKeeper connectServer() {
         ZooKeeper zk = null;
         try {
-            zk = new ZooKeeper(registryAddress, Stuff.ZK_SESSION_TIMEOUT, (WatchedEvent event) -> {
+            zk = new ZooKeeper(registryAddress, LunaConfigure.ZK_SESSION_TIMEOUT, (WatchedEvent event) -> {
                     if (event.getState() == Watcher.Event.KeeperState.SyncConnected) {
                         latch.countDown();
                     }
@@ -52,10 +52,10 @@ public class ServiceRegistry {
 
     private void AddRootNode(ZooKeeper zk){
         try {
-            Stat s = zk.exists(Stuff.ZK_REGISTRY_PATH, false);
+            Stat s = zk.exists(LunaConfigure.ZK_REGISTRY_PATH, false);
             if (s == null) {
-                zk.create(Stuff.ZK_REGISTRY_PATH, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-                LOGGER.debug("Luna: create zookeeper root node ({})", Stuff.ZK_REGISTRY_PATH);
+                zk.create(LunaConfigure.ZK_REGISTRY_PATH, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                LOGGER.debug("Luna: create zookeeper root node ({})", LunaConfigure.ZK_REGISTRY_PATH);
             }
         } catch (KeeperException | InterruptedException e) {
             LOGGER.error(e.toString());
@@ -67,7 +67,7 @@ public class ServiceRegistry {
     private void createNode(ZooKeeper zk, String data) {
         try {
             byte[] bytes = data.getBytes();
-            String path = zk.create(Stuff.ZK_DATA_PATH, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);//// TODO: 2017/6/21
+            String path = zk.create(LunaConfigure.ZK_DATA_PATH, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);//// TODO: 2017/6/21
             LOGGER.debug("Luna: create zookeeper node ({} => {})", path, data);
         } catch (KeeperException | InterruptedException ex){
             LOGGER.error("Luna: ", ex);

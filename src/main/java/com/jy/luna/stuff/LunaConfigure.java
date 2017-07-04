@@ -1,4 +1,4 @@
-package com.jy.luna.commons;
+package com.jy.luna.stuff;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 /**
  * Created by neo on 2017/6/20.
  */
-public class Stuff {
+public class LunaConfigure {
 
     public static ExecutorService execuService = Executors.newCachedThreadPool();
 

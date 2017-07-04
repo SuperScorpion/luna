@@ -1,6 +1,6 @@
 package com.jy.luna.xsd.element;
 
-import com.jy.luna.commons.LunaSpringReform;
+import com.jy.luna.stuff.LunaSpringReform;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

@@ -1,8 +1,9 @@
 package com.jy.luna.server;
 
-import com.jy.luna.commons.Stuff;
 import com.jy.luna.protocol.RpcRequest;
 import com.jy.luna.protocol.RpcResponse;
+import com.jy.luna.stuff.LunaConfigure;
+import com.jy.luna.stuff.exception.LunaException;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -29,7 +30,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     @Override
     public void channelRead0(final ChannelHandlerContext ctx, final RpcRequest request) throws Exception {
-        Stuff.execuService.submit(() -> {
+        LunaConfigure.execuService.submit(() -> {
 //                System.out.println("Recevie=======>>" + request.getRequestId());
                 LOGGER.debug("Luna: Receive request " + request.getRequestId());
                 RpcResponse response = new RpcResponse();
@@ -61,21 +62,12 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
         String className = request.getClassName();
         Object serviceBean = serviceBeanMap.get(className);
 
-        if(serviceBean == null) throw new RuntimeException("Luna serverHandler can not find the serviceBean " + className);
+        if(serviceBean == null) throw new LunaException("Luna serverHandler can not find the serviceBean " + className);
 
         Class<?> serviceClass = serviceBean.getClass();
         String methodName = request.getMethodName();
         Class<?>[] parameterTypes = request.getParameterClassTypes();
         Object[] parameters = request.getParameters();
-
-        /*LOGGER.debug(serviceClass.getName());
-        LOGGER.debug(methodName);
-        for (int i = 0; i < parameterTypes.length; ++i) {
-            LOGGER.debug(parameterTypes[i].getName());
-        }
-        for (int i = 0; i < parameters.length; ++i) {
-            LOGGER.debug(parameters[i].toString());
-        }*/
 
         // JDK reflect
         Method method = serviceClass.getMethod(methodName, parameterTypes);
@@ -86,7 +78,6 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
         /*FastClass serviceFastClass = FastClass.create(serviceClass);
         FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
         return serviceFastMethod.invoke(serviceBean, parameters);*/
-//        return "qwe";
     }
 
     @Override

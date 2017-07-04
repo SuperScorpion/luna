@@ -2,6 +2,7 @@ package com.jy.luna.client;
 
 import com.jy.luna.protocol.RpcRequest;
 import com.jy.luna.protocol.RpcResponse;
+import com.jy.luna.stuff.exception.LunaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,15 +21,16 @@ public class RpcFuture implements Future<Object> {
     private RpcResponse response;
     private long startTime;
 
-    private long responseTimeThreshold = 6000;//timeout
+    private long responseTimeThreshold;//timeout
 
     private boolean isDone = false;
     private ReentrantLock lock = new ReentrantLock();
     private Condition lockCondi = lock.newCondition();
 
-    public RpcFuture(RpcRequest request) {
+    public RpcFuture(RpcRequest request, String timeout) {
         this.request = request;
         startTime = System.currentTimeMillis();
+        this.responseTimeThreshold = Long.valueOf(timeout);
     }
 
     @Override
@@ -63,7 +65,7 @@ public class RpcFuture implements Future<Object> {
                     return null;
                 }
             } else {
-                throw new RuntimeException("Timeout exception. Request id: " + request.getRequestId()
+                throw new LunaException("Timeout exception. Request id: " + request.getRequestId()
                         + ". Request class name: " + request.getClassName()
                         + ". Request method: " + request.getMethodName());
             }
@@ -91,7 +93,7 @@ public class RpcFuture implements Future<Object> {
 
             long responseTime = System.currentTimeMillis() - startTime;
             if (responseTime > responseTimeThreshold)
-                LOGGER.warn("Luna: Service response time is too slow. Request id = " + response.getRequestId() + ". Response Time = " + responseTime + "ms");
+                LOGGER.warn("Luna: Server response time is too slow. Request id = " + response.getRequestId() + ". Response Time = " + responseTime + "ms" + ". The responseTimeThreshold = " + responseTimeThreshold);
         } finally {
             lock.unlock();
         }

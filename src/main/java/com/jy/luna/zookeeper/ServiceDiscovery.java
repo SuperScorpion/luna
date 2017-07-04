@@ -2,7 +2,7 @@ package com.jy.luna.zookeeper;
 
 import com.jy.luna.client.ClientHandlerManager;
 import com.jy.luna.client.ClientStuff;
-import com.jy.luna.commons.Stuff;
+import com.jy.luna.stuff.LunaConfigure;
 import com.jy.luna.xsd.LunaXsdHandler;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -65,7 +65,7 @@ public class ServiceDiscovery {
     private ZooKeeper connectServer() {
         ZooKeeper zk = null;
         try {
-            zk = new ZooKeeper(registryAddress, Stuff.ZK_SESSION_TIMEOUT, (WatchedEvent event) -> {
+            zk = new ZooKeeper(registryAddress, LunaConfigure.ZK_SESSION_TIMEOUT, (WatchedEvent event) -> {
                     if (event.getState() == Watcher.Event.KeeperState.SyncConnected) {
                         latch.countDown();
                     }
@@ -80,13 +80,13 @@ public class ServiceDiscovery {
 
     private void watchNode(final ZooKeeper zk) {
         try {
-            List<String> nodeList = zk.getChildren(Stuff.ZK_REGISTRY_PATH, (WatchedEvent event) -> {
+            List<String> nodeList = zk.getChildren(LunaConfigure.ZK_REGISTRY_PATH, (WatchedEvent event) -> {
                     if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) watchNode(zk);
             });
             if(nodeList != null && !nodeList.isEmpty()) {
                 List<String> dataList = new ArrayList<>();
                 for (String node : nodeList) {
-                    byte[] bytes = zk.getData(Stuff.ZK_REGISTRY_PATH + "/" + node, false, null);
+                    byte[] bytes = zk.getData(LunaConfigure.ZK_REGISTRY_PATH + "/" + node, false, null);
                     dataList.add(new String(bytes));
                 }
                 LOGGER.debug("Luna: node data: {}", dataList);
