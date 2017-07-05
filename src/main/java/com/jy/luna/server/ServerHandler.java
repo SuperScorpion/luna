@@ -59,10 +59,12 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     private Object handle(RpcRequest request) throws Throwable {
 
+        if(serviceBeanMap== null || serviceBeanMap.isEmpty()) throw new LunaException("Luna: There is no LunaService available");
+
         String className = request.getClassName();
         Object serviceBean = serviceBeanMap.get(className);
 
-        if(serviceBean == null) throw new LunaException("Luna serverHandler can not find the serviceBean " + className);
+        if(serviceBean == null) throw new LunaException("Luna: ServerHandler can not find the serviceBean " + className);
 
         Class<?> serviceClass = serviceBean.getClass();
         String methodName = request.getMethodName();

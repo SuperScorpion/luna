@@ -64,7 +64,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
     public RpcFuture channelWrite0(RpcRequest request) throws ExecutionException, InterruptedException {
         //设置service请求超时时间由用户决定的
         Map<String, String> stMap = LunaXsdHandler.serviceTimeoutMap;
-        String timeout = "6000";
+        String timeout = null;
         if(stMap != null && !stMap.isEmpty()) {
             timeout =   LunaXsdHandler.serviceTimeoutMap.get(request.getClassName());
         }

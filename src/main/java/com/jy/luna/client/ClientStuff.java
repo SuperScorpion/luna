@@ -18,7 +18,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.net.InetSocketAddress;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by neo on 2017/6/20.
@@ -27,9 +27,9 @@ public class ClientStuff {
 
 
     public ClientStuff initProxy2Spring(ApplicationContext applicationContext) {
-        List<String> serviceList = LunaXsdHandler.servicePathList;
-        if(serviceList != null && !serviceList.isEmpty()) {
-            for(String se : serviceList) {
+        Set<String> servicePathList = LunaXsdHandler.serviceTimeoutMap.keySet();
+        if(servicePathList != null && !servicePathList.isEmpty()) {
+            for(String se : servicePathList) {
 
                 Class<?> clz = null;
                 Object pox = null;
@@ -41,7 +41,7 @@ public class ClientStuff {
                     e.printStackTrace();
                 }
 
-                if(pox == null) throw new LunaException("Luna: there was an error in the init proxy : " + se);
+                if(pox == null) throw new LunaException("Luna: There was an error in the init proxy : " + se);
 
                 DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
                 beanFactory.registerSingleton(LunaUtils.lowcaseFirst(clz.getSimpleName()), pox);

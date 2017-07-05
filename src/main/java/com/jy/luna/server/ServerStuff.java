@@ -49,7 +49,7 @@ public class ServerStuff {
             }
         }
 
-        if(LunaUtils.isBlank(LunaUtils.gainLocalHostIp()) || LunaUtils.isBlank(LunaXsdHandler.port)) throw new LunaException("Luna: local ip or port is a need");
+        if(LunaUtils.isBlank(LunaUtils.gainLocalHostIp()) || LunaUtils.isBlank(LunaXsdHandler.port)) throw new LunaException("Luna: The local ip or port is a need");
 
         this.serverAddress = LunaUtils.gainLocalHostIp() + ":" + LunaXsdHandler.port;
     }

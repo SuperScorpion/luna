@@ -109,7 +109,7 @@ public class ClientHandlerManager {
 
                 //add new and delete the abandoned
                 Set<InetSocketAddress> oriIsaSet = new HashSet(connectedServerNodesMap.keySet());
-                Set<InetSocketAddress> mixIsaSet = new HashSet<>();//遗留的
+                Set<InetSocketAddress> mixIsaSet = new HashSet<>();//遗留的可用的
 
                 for(InetSocketAddress isa : isaList) {
                     if(!oriIsaSet.contains(isa)) {//new add
@@ -125,6 +125,10 @@ public class ClientHandlerManager {
                         connectedServerNodesMap.remove(isa);
                     }
                 }
+
+                //help gc
+                oriIsaSet.clear();
+                mixIsaSet.clear();
 
             }
         }

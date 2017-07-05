@@ -2,6 +2,7 @@ package com.jy.luna.client;
 
 import com.jy.luna.protocol.RpcRequest;
 import com.jy.luna.protocol.RpcResponse;
+import com.jy.luna.stuff.common.LunaUtils;
 import com.jy.luna.stuff.exception.LunaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public class RpcFuture implements Future<Object> {
     public RpcFuture(RpcRequest request, String timeout) {
         this.request = request;
         startTime = System.currentTimeMillis();
-        this.responseTimeThreshold = Long.valueOf(timeout);
+        this.responseTimeThreshold = LunaUtils.isBlank(timeout) ? 6000 : Long.valueOf(timeout);
     }
 
     @Override

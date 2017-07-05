@@ -12,7 +12,7 @@ public class LunaSpringReform {
 
 	public static void reform(ApplicationContext applicationContext) {
 
-		if(applicationContext == null) throw new LunaException("Luna: spring applicationContext is null");
+		if(applicationContext == null) throw new LunaException("Luna: The spring applicationContext is null");
 
 
 		boolean isServer = LunaXsdHandler.initParamOfXml(applicationContext);//初始化用户设置 xml参数值
