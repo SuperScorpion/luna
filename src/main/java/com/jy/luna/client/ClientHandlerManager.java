@@ -24,10 +24,11 @@ public class ClientHandlerManager {
 
     private volatile static ClientHandlerManager handlerManager;
 
+    private Map<String, List<ClientHandler>> serviceHandlersMap = new ConcurrentHashMap<>();
     private Map<InetSocketAddress, ClientHandler> connectedServerNodesMap = new ConcurrentHashMap<>();
     private Lock lock = new ReentrantLock();
     private Condition condition = lock.newCondition();
-    private CopyOnWriteArrayList<ClientHandler> handlerList = new CopyOnWriteArrayList<>();
+//    private CopyOnWriteArrayList<ClientHandler> handlerList = new CopyOnWriteArrayList<>();
     private AtomicInteger roundRobinFlag = new AtomicInteger(0);
 
     private long chooseLoopWaitTime = 6000;
@@ -46,7 +47,7 @@ public class ClientHandlerManager {
 
 
     public void addHandler(ClientHandler handler) {
-        handlerList.add(handler);
+//        handlerList.add(handler);
         InetSocketAddress remoteAddress = (InetSocketAddress) handler.getChannel().remoteAddress();
         connectedServerNodesMap.put(remoteAddress, handler);
         signalAvailableHandler();
@@ -61,13 +62,18 @@ public class ClientHandlerManager {
         }
     }
 
-    public ClientHandler chooseHandler() {
-        int size = handlerList.size();
+
+
+    public ClientHandler chooseHandler(String servicePathName) {
+
+        List<ClientHandler> currentServiceHandlerList = serviceHandlersMap.get(servicePathName);
+
+        int size = currentServiceHandlerList.size();
         while (size == 0) {
             try {
                 boolean available = waitingForHandler();
                 if (available) {
-                    size = handlerList.size();
+                    size = currentServiceHandlerList.size();
                 }
             } catch (InterruptedException e) {
                 LOGGER.error("Luna: Waiting for available node is interrupted! ", e);
@@ -82,7 +88,7 @@ public class ClientHandlerManager {
             index = ThreadLocalRandom.current().nextInt(size);
         }
 
-        return handlerList.get(index);
+        return currentServiceHandlerList.get(index);
     }
 
     private boolean waitingForHandler() throws InterruptedException {
@@ -94,7 +100,51 @@ public class ClientHandlerManager {
         }
     }
 
-    public void addOrUpdateLocalServerInfo(List<String> addressList ,ClientStuff clientStuff) throws Exception {
+
+
+
+
+
+
+    public void refreshLocalServerByThisService(String serviceName, List<String> addressList, ClientStuff clientStuff) throws Exception {
+
+        if(addressList != null && !addressList.isEmpty()) {
+
+            List<InetSocketAddress> isaList = convertAddressList(addressList);
+
+            if(!serviceHandlersMap.containsKey(serviceName)) {
+                List<ClientHandler> currentServiceHandlerList = new ArrayList<>();
+                //add
+                for (InetSocketAddress isa : isaList) {
+                    if(!connectedServerNodesMap.containsKey(isa)) {
+                        clientStuff.connectServerProcessor(isa);
+                    }
+                    currentServiceHandlerList.add(connectedServerNodesMap.get(isa));
+                }
+                serviceHandlersMap.put(serviceName, currentServiceHandlerList);
+            } else {
+                List<ClientHandler> currentServiceHandlerList = serviceHandlersMap.get(serviceName);
+                currentServiceHandlerList.clear();//delete
+                //add
+                for (InetSocketAddress isa : isaList) {
+                    if(!connectedServerNodesMap.containsKey(isa)) {
+                        clientStuff.connectServerProcessor(isa);
+                    }
+                    currentServiceHandlerList.add(connectedServerNodesMap.get(isa));
+                }
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+   /* public void addOrUpdateLocalServerInfo(List<String> addressList, ClientStuff clientStuff) throws Exception {
 
         if(addressList != null && !addressList.isEmpty()) {
 
@@ -132,7 +182,7 @@ public class ClientHandlerManager {
 
             }
         }
-    }
+    }*/
 
     private List<InetSocketAddress> convertAddressList(List<String> addressList) {
 

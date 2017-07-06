@@ -45,7 +45,7 @@ public class ProxyHandler implements InvocationHandler {
         request.setParameters(args);
 
 
-        ClientHandler handler = ClientHandlerManager.getInstance().chooseHandler();
+        ClientHandler handler = ClientHandlerManager.getInstance().chooseHandler(cls.getName());
         RpcFuture rpcFuture = handler.channelWrite0(request);
         return rpcFuture.get();
     }

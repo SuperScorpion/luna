@@ -1,6 +1,7 @@
 package com.jy.luna.zookeeper;
 
 import com.jy.luna.stuff.common.LunaConfigure;
+import com.jy.luna.stuff.common.LunaUtils;
 import com.jy.luna.xsd.LunaXsdHandler;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
@@ -8,6 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 public class ServiceRegistry {
@@ -18,18 +22,21 @@ public class ServiceRegistry {
 
     private String registryAddress;
 
+//    private ZooKeeper zk;
+
 
     public ServiceRegistry() {
 
         this.registryAddress = LunaXsdHandler.address;
     }
 
-    public void register(String data) {
-        if (data != null) {
+    public void register(Map<String, Object> serviceBeanMap, String data) {
+        if (data != null && LunaUtils.isNotBlank(data)) {
+//            zk = zk == null ? connectServer() : zk;
             ZooKeeper zk = connectServer();
             if (zk != null) {
                 AddRootNode(zk); // Add root node if not exist
-                createNode(zk, data);
+                createServiceNode(zk, serviceBeanMap, data);
             }
         }
     }
@@ -40,7 +47,9 @@ public class ServiceRegistry {
             zk = new ZooKeeper(registryAddress, LunaConfigure.ZK_SESSION_TIMEOUT, (WatchedEvent event) -> {
                     if (event.getState() == Watcher.Event.KeeperState.SyncConnected) {
                         latch.countDown();
-                    }
+                    } /*else if(event.getState() == Watcher.Event.KeeperState.Expired) {
+                        connectServer();
+                    }*/
             });
             latch.await();
         } catch (IOException | InterruptedException ex){
@@ -63,11 +72,32 @@ public class ServiceRegistry {
         }
     }
 
+    private void createServiceNode(ZooKeeper zk, Map<String, Object> serviceBeanMap, String data) {
+        if(serviceBeanMap != null && !serviceBeanMap.isEmpty()) {
+            Set<String> servicePathSet = serviceBeanMap.keySet();
+
+            for (String servicePath : servicePathSet) {
+                String serPath = LunaConfigure.ZK_REGISTRY_PATH + "/" + servicePath;
+                try {
+                    Stat s = zk.exists(serPath, false);
+                    if (s == null) {
+                        zk.create(serPath, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);//// TODO: 2017/6/21
+                    }
+                    createIpNode(zk, data, serPath);//创建地址节点 并赋予data
+
+                } catch (KeeperException | InterruptedException ex) {
+                    LOGGER.error("Luna: ", ex);
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
 //    http://blog.csdn.net/lipeng_bigdata/article/details/50986845  ZooKeeper目录节点形式CreateMode
-    private void createNode(ZooKeeper zk, String data) {
+    private void createIpNode(ZooKeeper zk, String data, String serPath) {
         try {
             byte[] bytes = data.getBytes();
-            String path = zk.create(LunaConfigure.ZK_DATA_PATH, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);//// TODO: 2017/6/21
+            String path = zk.create(serPath + "/" + data, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);//// TODO: 2017/6/21
             LOGGER.debug("Luna: create zookeeper node ({} => {})", path, data);
         } catch (KeeperException | InterruptedException ex){
             LOGGER.error("Luna: ", ex);
@@ -77,14 +107,15 @@ public class ServiceRegistry {
 
     /*public static void main(String[] args) throws InterruptedException {
 
-        String address = "localhost:2181";
+        LunaXsdHandler.address = "localhost:2181";
 
         ServiceRegistry sry = new ServiceRegistry();
-        sry.register("nevermore");
+        System.out.println("开始睡眠的热");
+        Thread.currentThread().sleep(7000);
+        System.out.println("结束睡眠的人");
 
-        Thread.currentThread().sleep(99000);
 
         ServiceDiscovery sdc = new ServiceDiscovery(null);
-        System.out.println(sdc.discover());
+//        sdc.discover();
     }*/
 }

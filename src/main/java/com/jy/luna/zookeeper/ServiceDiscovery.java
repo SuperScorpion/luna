@@ -3,6 +3,7 @@ package com.jy.luna.zookeeper;
 import com.jy.luna.client.ClientHandlerManager;
 import com.jy.luna.client.ClientStuff;
 import com.jy.luna.stuff.common.LunaConfigure;
+import com.jy.luna.stuff.common.LunaUtils;
 import com.jy.luna.xsd.LunaXsdHandler;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -14,7 +15,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ServiceDiscovery {
 
@@ -37,13 +40,18 @@ public class ServiceDiscovery {
 
         zookeeper = connectServer();
         if (zookeeper != null) {
-            watchNode(zookeeper);
+            watchTopNode(zookeeper);
         }
     }
 
-    /*public String discover() {
+   /* public String discover() {
         String data = null;
         int size = dataList.size();
+
+        for(String d : dataList) {
+            System.out.println("=======" + d);
+        }
+
         if (size > 0) {
             if (size == 1) {
                 data = dataList.get(0);
@@ -78,26 +86,43 @@ public class ServiceDiscovery {
         return zk;
     }
 
-    private void watchNode(final ZooKeeper zk) {
+
+    private void watchTopNode(ZooKeeper zk) {
         try {
-            List<String> nodeList = zk.getChildren(LunaConfigure.ZK_REGISTRY_PATH, (WatchedEvent event) -> {
-                    if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) watchNode(zk);
+            List<String> serviceNodeList = zk.getChildren(LunaConfigure.ZK_REGISTRY_PATH, false);
+            Set<String> servicePathList = LunaXsdHandler.serviceTimeoutMap.keySet();
+            if(serviceNodeList != null && !serviceNodeList.isEmpty() && servicePathList != null && !servicePathList.isEmpty()) {
+                for (String serviceNodeName : serviceNodeList) {
+                    for (String se : servicePathList) {
+                        if(LunaUtils.isNotBlank(serviceNodeName) && LunaUtils.isNotBlank(se) && se.equals(serviceNodeName)) {
+                            watchServiceNode(zk, serviceNodeName, LunaConfigure.ZK_REGISTRY_PATH + "/" + serviceNodeName);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Luna: ", e);
+            e.printStackTrace();
+        }
+    }
+
+    private void watchServiceNode(ZooKeeper zk, String serviceName, String serviceNodePath) {
+        try {
+            List<String> ipNodeList = zk.getChildren(serviceNodePath, (WatchedEvent event) -> {
+                    if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) watchServiceNode(zk, serviceName, serviceNodePath);//注册用一次失效
             });
-            if(nodeList != null && !nodeList.isEmpty()) {
+            if(ipNodeList != null && !ipNodeList.isEmpty()) {
                 List<String> dataList = new ArrayList<>();
-                for (String node : nodeList) {
-                    byte[] bytes = zk.getData(LunaConfigure.ZK_REGISTRY_PATH + "/" + node, false, null);
+                for (String node : ipNodeList) {
+                    byte[] bytes = zk.getData(serviceNodePath + "/" + node, false, null);
                     dataList.add(new String(bytes));
                 }
-                LOGGER.debug("Luna: node data: {}", dataList);
+//                LOGGER.debug("Luna: node data: {}", dataList);
 //                this.dataList = dataList;
 
                 LOGGER.debug("Luna: Service discovery try to add or update connected server node.");
-                ClientHandlerManager.getInstance().addOrUpdateLocalServerInfo(dataList, clientStuff);
+                ClientHandlerManager.getInstance().refreshLocalServerByThisService(serviceName, dataList, clientStuff);
             }
-        } catch (KeeperException | InterruptedException e) {
-            LOGGER.error("Luna: ", e);
-            e.printStackTrace();
         } catch (Exception e) {
             LOGGER.error("Luna: ", e);
             e.printStackTrace();

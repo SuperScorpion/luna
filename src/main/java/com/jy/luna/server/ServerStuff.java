@@ -81,7 +81,7 @@ public class ServerStuff {
                 ChannelFuture future = bootstrap.bind(host, port).sync();// Start the server.
 
                 if (serviceRegistry != null) {//注册当前server的服务
-                    serviceRegistry.register(serverAddress);
+                    serviceRegistry.register(serviceBeanMap, serverAddress);
                 }
 
                 future.channel().closeFuture().sync();// Wait until the server socket is closed.
