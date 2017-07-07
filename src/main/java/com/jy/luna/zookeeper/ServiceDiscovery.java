@@ -5,7 +5,6 @@ import com.jy.luna.client.ClientStuff;
 import com.jy.luna.stuff.common.LunaConfigure;
 import com.jy.luna.stuff.common.LunaUtils;
 import com.jy.luna.xsd.LunaXsdHandler;
-import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class ServiceDiscovery {
 
@@ -106,23 +104,28 @@ public class ServiceDiscovery {
         }
     }
 
-    private void watchServiceNode(ZooKeeper zk, String serviceName, String serviceNodePath) {
+    private void watchServiceNode(ZooKeeper zk, String serviceFullName, String serviceNodePath) {
         try {
             List<String> ipNodeList = zk.getChildren(serviceNodePath, (WatchedEvent event) -> {
-                    if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) watchServiceNode(zk, serviceName, serviceNodePath);//注册用一次失效
+                    if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
+                        LOGGER.debug("Luna: " + serviceFullName + " NodeChildrenChanged Now...");
+                        watchServiceNode(zk, serviceFullName, serviceNodePath);//注册用一次失效
+                    }
             });
+            List<String> dataList = null;
             if(ipNodeList != null && !ipNodeList.isEmpty()) {
-                List<String> dataList = new ArrayList<>();
-                for (String node : ipNodeList) {
-                    byte[] bytes = zk.getData(serviceNodePath + "/" + node, false, null);
-                    dataList.add(new String(bytes));
+                dataList = new ArrayList<>();
+                for (String ipNode : ipNodeList) {
+                    byte[] ipByte = zk.getData(serviceNodePath + "/" + ipNode, false, null);
+                    dataList.add(new String(ipByte));
                 }
+            }
 //                LOGGER.debug("Luna: node data: {}", dataList);
 //                this.dataList = dataList;
 
-                LOGGER.debug("Luna: Service discovery try to add or update connected server node.");
-                ClientHandlerManager.getInstance().refreshLocalServerByThisService(serviceName, dataList, clientStuff);
-            }
+            LOGGER.debug("Luna: Service discovery try to add or update connected server node.");
+            ClientHandlerManager.getInstance().refreshLocalServerByThisService(serviceFullName, dataList, clientStuff);
+
         } catch (Exception e) {
             LOGGER.error("Luna: ", e);
             e.printStackTrace();
@@ -130,7 +133,7 @@ public class ServiceDiscovery {
     }
 
     public void stop(){
-        if(zookeeper!=null){
+        if(zookeeper != null){
             try {
                 zookeeper.close();
             } catch (InterruptedException e) {

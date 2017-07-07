@@ -5,7 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -25,9 +27,9 @@ public class ClientHandlerManager {
     private volatile static ClientHandlerManager handlerManager;
 
     private Map<String, List<ClientHandler>> serviceHandlersMap = new ConcurrentHashMap<>();
-    private Map<InetSocketAddress, ClientHandler> connectedServerNodesMap = new ConcurrentHashMap<>();
+    private Map<InetSocketAddress, ClientHandler> connectedServerNodesMap = new ConcurrentHashMap<>();///////所有的handler总的记录
     private Lock lock = new ReentrantLock();
-    private Condition condition = lock.newCondition();
+    private Condition condition = lock.newCondition();////TODO
 //    private CopyOnWriteArrayList<ClientHandler> handlerList = new CopyOnWriteArrayList<>();
     private AtomicInteger roundRobinFlag = new AtomicInteger(0);
 
@@ -46,10 +48,13 @@ public class ClientHandlerManager {
     }
 
 
-    public void addHandler(ClientHandler handler) {
+    public void addHandler(ClientHandler handler, List<ClientHandler> currentServiceHandlerList) {
 //        handlerList.add(handler);
         InetSocketAddress remoteAddress = (InetSocketAddress) handler.getChannel().remoteAddress();
         connectedServerNodesMap.put(remoteAddress, handler);
+
+        currentServiceHandlerList.add(handler);
+
         signalAvailableHandler();
     }
 
@@ -64,9 +69,9 @@ public class ClientHandlerManager {
 
 
 
-    public ClientHandler chooseHandler(String servicePathName) {
+    public ClientHandler chooseHandler(String serviceFullName) {
 
-        List<ClientHandler> currentServiceHandlerList = serviceHandlersMap.get(servicePathName);
+        List<ClientHandler> currentServiceHandlerList = serviceHandlersMap.get(serviceFullName);
 
         int size = currentServiceHandlerList.size();
         while (size == 0) {
@@ -101,44 +106,59 @@ public class ClientHandlerManager {
     }
 
 
+    /**
+     * 对应的service添加handlerlist
+     * @param clientStuff
+     * @param isaList
+     * @param currentServiceHandlerList
+     * @throws Exception
+     */
+    private void currentServiceHandlerListAdd(ClientStuff clientStuff, List<InetSocketAddress> isaList, List<ClientHandler> currentServiceHandlerList) throws Exception {
+        //add
+        for (InetSocketAddress isa : isaList) {
+            if(!connectedServerNodesMap.containsKey(isa)) {
+                clientStuff.connectServerProcessor(isa, currentServiceHandlerList);////不存在则连接产生handler并添加此handler asynchronous
+            }  else {
+                currentServiceHandlerList.add(connectedServerNodesMap.get(isa));//存在此handler则直接加 synchronous
+            }
+        }
+    }
 
-
-
-
-
-    public void refreshLocalServerByThisService(String serviceName, List<String> addressList, ClientStuff clientStuff) throws Exception {
+    /**
+     * 刷新当前的service对应信息
+     * @param serviceFullName
+     * @param addressList
+     * @param clientStuff
+     * @throws Exception
+     */
+    public void refreshLocalServerByThisService(String serviceFullName, List<String> addressList, ClientStuff clientStuff) throws Exception {
 
         if(addressList != null && !addressList.isEmpty()) {
 
             List<InetSocketAddress> isaList = convertAddressList(addressList);
 
-            if(!serviceHandlersMap.containsKey(serviceName)) {
-                List<ClientHandler> currentServiceHandlerList = new ArrayList<>();
-                //add
-                for (InetSocketAddress isa : isaList) {
-                    if(!connectedServerNodesMap.containsKey(isa)) {
-                        clientStuff.connectServerProcessor(isa);
-                    }
-                    currentServiceHandlerList.add(connectedServerNodesMap.get(isa));
-                }
-                serviceHandlersMap.put(serviceName, currentServiceHandlerList);
+            if(!serviceHandlersMap.containsKey(serviceFullName)) {
+
+                List<ClientHandler> currentServiceHandlerList = new CopyOnWriteArrayList<>();
+
+                currentServiceHandlerListAdd(clientStuff, isaList, currentServiceHandlerList);///add
+
+                serviceHandlersMap.put(serviceFullName, currentServiceHandlerList);
             } else {
-                List<ClientHandler> currentServiceHandlerList = serviceHandlersMap.get(serviceName);
+
+                List<ClientHandler> currentServiceHandlerList = serviceHandlersMap.get(serviceFullName);
+
                 currentServiceHandlerList.clear();//delete
-                //add
-                for (InetSocketAddress isa : isaList) {
-                    if(!connectedServerNodesMap.containsKey(isa)) {
-                        clientStuff.connectServerProcessor(isa);
-                    }
-                    currentServiceHandlerList.add(connectedServerNodesMap.get(isa));
-                }
+
+                currentServiceHandlerListAdd(clientStuff, isaList, currentServiceHandlerList);//add
             }
+        } else {
+
+            List<ClientHandler> currentServiceHandlerList = serviceHandlersMap.get(serviceFullName);
+
+            if(currentServiceHandlerList != null) currentServiceHandlerList.clear();//delete
         }
     }
-
-
-
-
 
 
 

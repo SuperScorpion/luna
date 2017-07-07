@@ -18,6 +18,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -53,10 +54,10 @@ public class ClientStuff {
 
     EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
 
-    public void connectServerProcessor(InetSocketAddress remotePeer) throws Exception {
+    public void connectServerProcessor(InetSocketAddress remotePeer, List<ClientHandler> currentServiceHandlerList) throws Exception {
         LunaConfigure.execuService.submit(() -> {
             Bootstrap b = new Bootstrap();
-            try {
+//            try {
                 b.group(eventLoopGroup).channel(NioSocketChannel.class).handler(
                         new ChannelInitializer() {
                             @Override
@@ -68,19 +69,14 @@ public class ClientStuff {
                                 cp.addLast(new ClientHandler());
                             }
                         }
-                );
-
-
-
-                // Start the client.
-                ChannelFuture f = b.connect(remotePeer).addListener(
+                ).connect(remotePeer).addListener(
                         new ChannelFutureListener() {
                             @Override
                             public void operationComplete(final ChannelFuture channelFuture) throws Exception {
                                 if (channelFuture.isSuccess()) {
 
                                     ClientHandler handler = channelFuture.channel().pipeline().get(ClientHandler.class);
-                                    ClientHandlerManager.getInstance().addHandler(handler);
+                                    ClientHandlerManager.getInstance().addHandler(handler, currentServiceHandlerList);
 
                                     /*RpcRequest rrqt = new RpcRequest();
                                     rrqt.setRequestId("123456789");
@@ -92,15 +88,18 @@ public class ClientStuff {
                         }
                 );
 
-                // Wait until the connection is closed.
-                f.channel().closeFuture().sync();
 
-            } catch (InterruptedException e) {
+            /*why i add this code then channel.writeAndFlush(request) will give me --- netty event executor terminated(exception)
+            is it shutdown now?*/
+
+//                f.channel().closeFuture().sync();// Wait until the connection is closed.
+
+            /*} catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
 //                System.out.println("shutdown client gracef");
                 eventLoopGroup.shutdownGracefully();
-            }
+            }*/
         });
     }
 
