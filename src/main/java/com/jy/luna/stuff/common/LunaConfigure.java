@@ -11,7 +11,7 @@ public class LunaConfigure {
     public static ExecutorService execuService = Executors.newCachedThreadPool();
 
 
-    public static int ZK_SESSION_TIMEOUT = 1000;///sessiontimeout watchServiceNode
+    public static int ZK_SESSION_TIMEOUT = 20000;///sessionTimeout watchServiceNode exception
 
     public static String ZK_REGISTRY_PATH = "/registry";
 }
