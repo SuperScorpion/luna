@@ -71,7 +71,7 @@ public class LunaUtils {
 
 
 
-
+/*
     public static void main(String[] args) throws UnknownHostException, SocketException {
 //        ServerStuff sstf = new ServerStuff();
         try {
@@ -111,5 +111,5 @@ public class LunaUtils {
 //        fd.put("b", "2");
 //        System.out.println(vb.size());
 
-    }
+    }*/
 }
