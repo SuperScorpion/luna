@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -47,9 +46,9 @@ public class ServiceRegistry {
             zk = new ZooKeeper(registryAddress, LunaConfigure.ZK_SESSION_TIMEOUT, (WatchedEvent event) -> {
                     if (event.getState() == Watcher.Event.KeeperState.SyncConnected) {
                         latch.countDown();
-                    } /*else if(event.getState() == Watcher.Event.KeeperState.Expired) {
-                        connectServer();
-                    }*/
+                    } else if(event.getState() == Watcher.Event.KeeperState.Expired) {
+                        System.out.println("cnm 过期了caonimacaonimacaoniamacaonimabi");
+                    }
             });
             latch.await();
         } catch (IOException | InterruptedException ex){

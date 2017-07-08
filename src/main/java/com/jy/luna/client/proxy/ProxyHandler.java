@@ -1,7 +1,7 @@
 package com.jy.luna.client.proxy;
 
 import com.jy.luna.client.ClientHandler;
-import com.jy.luna.client.ClientHandlerManager;
+import com.jy.luna.client.ClientCoreProcessor;
 import com.jy.luna.client.RpcFuture;
 import com.jy.luna.protocol.RpcRequest;
 
@@ -45,7 +45,7 @@ public class ProxyHandler implements InvocationHandler {
         request.setParameters(args);
 
 
-        ClientHandler handler = ClientHandlerManager.getInstance().chooseHandler(cls.getName());
+        ClientHandler handler = ClientCoreProcessor.getInstance().chooseHandler(cls.getName());
         RpcFuture rpcFuture = handler.channelWrite0(request);
         return rpcFuture.get();
     }

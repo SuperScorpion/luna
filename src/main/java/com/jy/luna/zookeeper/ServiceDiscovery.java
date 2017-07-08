@@ -1,6 +1,6 @@
 package com.jy.luna.zookeeper;
 
-import com.jy.luna.client.ClientHandlerManager;
+import com.jy.luna.client.ClientCoreProcessor;
 import com.jy.luna.client.ClientStuff;
 import com.jy.luna.stuff.common.LunaConfigure;
 import com.jy.luna.stuff.common.LunaUtils;
@@ -124,7 +124,7 @@ public class ServiceDiscovery {
 //                this.dataList = dataList;
 
             LOGGER.debug("Luna: Service discovery try to add or update connected server node.");
-            ClientHandlerManager.getInstance().refreshLocalServerByThisService(serviceFullName, dataList, clientStuff);
+            ClientCoreProcessor.getInstance().refreshLocalServerByThisService(serviceFullName, dataList, clientStuff);
 
         } catch (Exception e) {
             LOGGER.error("Luna: ", e);

@@ -18,7 +18,6 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.net.InetSocketAddress;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -54,7 +53,7 @@ public class ClientStuff {
 
     EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
 
-    public void connectServerProcessor(InetSocketAddress remotePeer, List<ClientHandler> currentServiceHandlerList) throws Exception {
+    public void connectServerProcessor(InetSocketAddress remotePeer, String serviceFullName) throws Exception {
         LunaConfigure.execuService.submit(() -> {
             Bootstrap b = new Bootstrap();
 //            try {
@@ -76,7 +75,7 @@ public class ClientStuff {
                                 if (channelFuture.isSuccess()) {
 
                                     ClientHandler handler = channelFuture.channel().pipeline().get(ClientHandler.class);
-                                    ClientHandlerManager.getInstance().addHandler(handler, currentServiceHandlerList);
+                                    ClientCoreProcessor.getInstance().addHandler(handler, serviceFullName);
 
                                     /*RpcRequest rrqt = new RpcRequest();
                                     rrqt.setRequestId("123456789");
