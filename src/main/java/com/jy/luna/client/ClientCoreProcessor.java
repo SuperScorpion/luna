@@ -114,16 +114,14 @@ public class ClientCoreProcessor {
             }
         } else {//delete to zero address or the initial is zero
 
-            ClientManager cmr= clientManagerMap.get(serviceFullName);
+            ClientManager cmr = clientManagerMap.get(serviceFullName);
 
-            List<ClientHandler> currentServiceHandlerList = cmr.getServiceHandlerList();
-
-            currentServiceHandlerList.clear();//delete
+            cmr.getServiceHandlerList().clear();//delete
         }
     }
 
 
-    public void deleteAbandonConnectedClientHandler(List<String> freshAddressList) throws Exception {
+    public synchronized void deleteAbandonConnectedClientHandler(List<String> freshAddressList) throws Exception {
 
         if(freshAddressList != null && !freshAddressList.isEmpty()) {
 

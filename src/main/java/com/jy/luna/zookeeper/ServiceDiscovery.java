@@ -74,6 +74,8 @@ public class ServiceDiscovery {
             zk = new ZooKeeper(registryAddress, LunaConfigure.ZK_SESSION_TIMEOUT, (WatchedEvent event) -> {
                     if (event.getState() == Watcher.Event.KeeperState.SyncConnected) {
                         latch.countDown();
+                    } else if(event.getState() == Watcher.Event.KeeperState.Expired) {
+                        LOGGER.warn("Luna: The client zookeeper session is expired");
                     }
             });
             latch.await();
@@ -93,7 +95,10 @@ public class ServiceDiscovery {
                 for (String serviceNodeName : serviceNodeList) {
                     for (String se : servicePathList) {
                         if(LunaUtils.isNotBlank(serviceNodeName) && LunaUtils.isNotBlank(se) && se.equals(serviceNodeName)) {
-                            watchServiceNode(zk, serviceNodeName, LunaConfigure.ZK_REGISTRY_PATH + "/" + serviceNodeName);
+
+                            LunaConfigure.execuService.submit(() -> {
+                                    watchServiceNode(zk, serviceNodeName, LunaConfigure.ZK_REGISTRY_PATH + "/" + serviceNodeName);
+                            });
                         }
                     }
                 }

@@ -47,7 +47,7 @@ public class ServiceRegistry {
                     if (event.getState() == Watcher.Event.KeeperState.SyncConnected) {
                         latch.countDown();
                     } else if(event.getState() == Watcher.Event.KeeperState.Expired) {
-                        System.out.println("cnm 过期了caonimacaonimacaoniamacaonimabi");
+                        LOGGER.warn("Luna: The server zookeeper session is expired");
                     }
             });
             latch.await();
