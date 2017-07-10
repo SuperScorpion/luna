@@ -12,13 +12,20 @@ rpc
 4. 服务消费者，从提供者地址列表中，基于软负载均衡算法，选一台提供者进行调用，如果调用失败，再选另一台调用。
 
 使用方法
+
 provider
+
 <luna:registry id="abcde" address="localhost:2181"/><!--注册中心zookeeper地址-->
+
 <luna:sev id="sev" port="3334" /><!--服务端暴露地址-->
 
+
 consumer
+
 <luna:registry id="reg" address="localhost:2181"/><!--注册中心zookeeper地址-->
+
 <luna:cli id="xx" service="com.xx.xx.service.BxxService"/><!--service1路径名称-->
+
 <luna:cli id="xxx" service="com.xx.xx.service.BxxxService"/><!--service2路径名称-->
 
 
