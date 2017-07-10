@@ -128,7 +128,7 @@ public class ServiceDiscovery {
 //                LOGGER.debug("Luna: node data: {}", dataList);
 //                this.dataList = dataList;
 
-            LOGGER.debug("Luna: Service discovery try to add or update connected server node.");
+            LOGGER.debug("Luna: " + serviceFullName + " discovery try to add or update server node.");
             ClientCoreProcessor.getInstance().refreshLocalServerByThisService(serviceFullName, dataList, clientStuff);
 
         } catch (Exception e) {
