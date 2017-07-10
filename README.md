@@ -21,5 +21,11 @@ consumer<br/>
 <luna:cli id="xx" service="com.xx.xx.service.BxxService"/><!--service1路径名称--><br/>
 <luna:cli id="xxx" service="com.xx.xx.service.BxxxService"/><!--service2路径名称--><br/>
 
-
 监控中心待完善.
+
+遇到问题
+1.序列化框架protostuff的问题 Object[null, xxx] -> Object[xxx].<br/>
+2.序列化protostuff的问题 还原序列化的时候 Objenesis 会把实体类里的属性默认值加上.<br/>
+3.lock的condition await signalall 必须持有资源锁才能有效.<br/>
+4.idea的断点会让zookeeper 产生ConnectionLossException.<br/>
+5.spring自定义标签id如何去掉.<br/>
