@@ -11,22 +11,15 @@ rpc
 3. 注册中心返回服务提供者地址列表给消费者，如果有变更，注册中心将基于长连接推送变更数据给消费者。
 4. 服务消费者，从提供者地址列表中，基于软负载均衡算法，选一台提供者进行调用，如果调用失败，再选另一台调用。
 
-使用方法
+使用方法<br/>
+provider<br/>
+<luna:registry id="abcde" address="localhost:2181"/><!--注册中心zookeeper地址--><br/>
+<luna:sev id="sev" port="3334" /><!--服务端暴露地址--><br/>
 
-provider
-
-<luna:registry id="abcde" address="localhost:2181"/><!--注册中心zookeeper地址-->
-
-<luna:sev id="sev" port="3334" /><!--服务端暴露地址-->
-
-
-consumer
-
-<luna:registry id="reg" address="localhost:2181"/><!--注册中心zookeeper地址-->
-
-<luna:cli id="xx" service="com.xx.xx.service.BxxService"/><!--service1路径名称-->
-
-<luna:cli id="xxx" service="com.xx.xx.service.BxxxService"/><!--service2路径名称-->
+consumer<br/>
+<luna:registry id="reg" address="localhost:2181"/><!--注册中心zookeeper地址--><br/>
+<luna:cli id="xx" service="com.xx.xx.service.BxxService"/><!--service1路径名称--><br/>
+<luna:cli id="xxx" service="com.xx.xx.service.BxxxService"/><!--service2路径名称--><br/>
 
 
 监控中心待完善.
