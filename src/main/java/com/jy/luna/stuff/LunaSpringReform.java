@@ -23,7 +23,7 @@ public class LunaSpringReform {
 		boolean isServer = LunaXsdHandler.initParamOfXml(applicationContext);//初始化用户设置 xml参数值
 
 		if(isServer) {
-			if (LunaUtils.isBlank(LunaXsdHandler.address)) {//直连方式cli
+			if (LunaUtils.isBlank(LunaXsdHandler.address)) {//直连方式sev
 				LOGGER.debug("Luna: Server start direct connection mode.");
 			} else {
 				new ServerStuff(new ServiceRegistry(), applicationContext).connectServerProcessor();//sev
