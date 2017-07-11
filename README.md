@@ -21,6 +21,10 @@ consumer<br/>
 <luna:cli id="xx" service="com.xx.xx.service.BxxService"/><!--service1路径名称--><br/>
 <luna:cli id="xxx" service="com.xx.xx.service.BxxxService"/><!--service2路径名称--><br/>
 
+直接跳过zookeeper注册中心
+consumer端直接添加url属性不填写address属性即可.
+provider端不填写address属性即可.
+
 监控中心待完善.
 
 遇到问题
@@ -29,3 +33,5 @@ consumer<br/>
 3.lock的condition await signalall 必须持有资源锁才能有效.<br/>
 4.idea的断点会让zookeeper 产生ConnectionLossException.<br/>
 5.spring自定义标签id如何去掉.<br/>
+6.client端添加了shutdownGracefully channel.writeAndFlush(request) 时会报 netty event executor terminated(exception)<br/>
+7.netty连接不了此localhost或者127.0.0.1地址.
