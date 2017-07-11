@@ -33,8 +33,9 @@ public class ServiceDiscovery {
 
     public ServiceDiscovery(ClientStuff clientStuff) {
 
-        this.registryAddress = LunaXsdHandler.address;
         this.clientStuff = clientStuff;
+
+        this.registryAddress = LunaXsdHandler.address;
 
         zookeeper = connectServer();
         if (zookeeper != null) {

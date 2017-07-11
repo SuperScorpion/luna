@@ -11,7 +11,7 @@
 
     <properties>
         <!-- spring版本号 -->
-        <spring.version>4.3.4.RELEASE</spring.version>
+        <spring.version>4.3.9.RELEASE</spring.version>
         <!-- log4j日志文件管理包版本 -->
         <slf4j.version>1.7.25</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
@@ -59,40 +59,33 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.5.Final</version>
+            <version>4.1.13.Final</version>
         </dependency>
 
         <!-- Protostuff -->
         <dependency>
             <groupId>com.dyuproject.protostuff</groupId>
             <artifactId>protostuff-core</artifactId>
-            <version>1.0.10</version>
+            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>com.dyuproject.protostuff</groupId>
             <artifactId>protostuff-runtime</artifactId>
-            <version>1.0.10</version>
+            <version>1.1.1</version>
         </dependency>
 
         <!-- ZooKeeper -->
         <dependency>
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
-            <version>3.4.9</version>
+            <version>3.4.10</version>
         </dependency>
-
-        <!-- Apache Commons Collections -->
-        <!--<dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-            <version>4.1</version>
-        </dependency>-->
 
         <!-- Objenesis -->
         <dependency>
             <groupId>org.objenesis</groupId>
             <artifactId>objenesis</artifactId>
-            <version>2.4</version>
+            <version>2.6</version>
         </dependency>
     </dependencies>
 

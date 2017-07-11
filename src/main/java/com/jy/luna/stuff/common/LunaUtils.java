@@ -1,10 +1,12 @@
 package com.jy.luna.stuff.common;
 
 
-import java.net.*;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 
 /**
  * Created by neo on 2016/12/4.
@@ -66,21 +68,134 @@ public class LunaUtils {
     }
 
 
+    //commons lang3 copy
+    public static String[] split(String str, String separatorChars) {
+        return splitWorker(str, separatorChars, -1, false);
+    }
 
+    private static String[] splitWorker(String str, String separatorChars, int max, boolean preserveAllTokens) {
+        if(str == null) {
+            return null;
+        } else {
+            int len = str.length();
+            if(len == 0) {
+                return new String[0];
+            } else {
+                ArrayList list = new ArrayList();
+                int sizePlus1 = 1;
+                int i = 0;
+                int start = 0;
+                boolean match = false;
+                boolean lastMatch = false;
+                if(separatorChars != null) {
+                    if(separatorChars.length() != 1) {
+                        label87:
+                        while(true) {
+                            while(true) {
+                                if(i >= len) {
+                                    break label87;
+                                }
 
+                                if(separatorChars.indexOf(str.charAt(i)) >= 0) {
+                                    if(match || preserveAllTokens) {
+                                        lastMatch = true;
+                                        if(sizePlus1++ == max) {
+                                            i = len;
+                                            lastMatch = false;
+                                        }
 
+                                        list.add(str.substring(start, i));
+                                        match = false;
+                                    }
 
+                                    ++i;
+                                    start = i;
+                                } else {
+                                    lastMatch = false;
+                                    match = true;
+                                    ++i;
+                                }
+                            }
+                        }
+                    } else {
+                        char sep = separatorChars.charAt(0);
 
-/*
-    public static void main(String[] args) throws UnknownHostException, SocketException {
-//        ServerStuff sstf = new ServerStuff();
-        try {
-//            sstf.afterPropertiesSet();
-        } catch (Exception e) {
-            e.printStackTrace();
+                        label71:
+                        while(true) {
+                            while(true) {
+                                if(i >= len) {
+                                    break label71;
+                                }
+
+                                if(str.charAt(i) == sep) {
+                                    if(match || preserveAllTokens) {
+                                        lastMatch = true;
+                                        if(sizePlus1++ == max) {
+                                            i = len;
+                                            lastMatch = false;
+                                        }
+
+                                        list.add(str.substring(start, i));
+                                        match = false;
+                                    }
+
+                                    ++i;
+                                    start = i;
+                                } else {
+                                    lastMatch = false;
+                                    match = true;
+                                    ++i;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    label103:
+                    while(true) {
+                        while(true) {
+                            if(i >= len) {
+                                break label103;
+                            }
+
+                            if(Character.isWhitespace(str.charAt(i))) {
+                                if(match || preserveAllTokens) {
+                                    lastMatch = true;
+                                    if(sizePlus1++ == max) {
+                                        i = len;
+                                        lastMatch = false;
+                                    }
+
+                                    list.add(str.substring(start, i));
+                                    match = false;
+                                }
+
+                                ++i;
+                                start = i;
+                            } else {
+                                lastMatch = false;
+                                match = true;
+                                ++i;
+                            }
+                        }
+                    }
+                }
+
+                if(match || preserveAllTokens && lastMatch) {
+                    list.add(str.substring(start, i));
+                }
+
+                return (String[])list.toArray(new String[list.size()]);
+            }
         }
+    }
 
-        InetSocketAddress isa = new InetSocketAddress("localhost", 3333);
+
+
+
+
+   /* public static void main(String[] args) throws UnknownHostException, SocketException {
+
+        *//*InetSocketAddress isa = new InetSocketAddress("localhost", 3333);
         InetSocketAddress isa2 = new InetSocketAddress("localhost", 3333);
 
         LunaConfigure sf = new LunaConfigure();
@@ -101,7 +216,15 @@ public class LunaUtils {
         System.out.println(isa.getHostName() + ":" + isa.getPort());
 
         System.out.println(isa.getHostString());
-        System.out.println(LunaUtils.gainLocalHostIp());
+        System.out.println(LunaUtils.gainLocalHostIp());*//*
+
+        String s = "1,2,3,4,5,6,";
+        String[] c = split(s, ",");
+
+        for(String x : c) {
+            System.out.println(x);
+        }
+
 //        Map fd = new HashMap();
 //        fd.put("a", "1");
 //

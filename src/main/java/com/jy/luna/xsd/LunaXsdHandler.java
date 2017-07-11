@@ -7,7 +7,9 @@ import com.jy.luna.xsd.element.Registry;
 import com.jy.luna.xsd.element.Sev;
 import org.springframework.context.ApplicationContext;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,11 +21,13 @@ public class LunaXsdHandler {
 
     public static String port;//Sev
 
-    public static String address = "localhost:2181";//Registry
+    public static String address;//Registry
 
-    public static Boolean isRoundRobin;//Registry
+    public static Boolean isRoundRobin = true;//Registry
 
 //    public static List<String> servicePathList;//Cli
+
+    public static Map<String, List<String>> serviceUrlListMap;//Cli
 
     public static Map<String, String> serviceTimeoutMap;//Cli
 
@@ -35,7 +39,7 @@ public class LunaXsdHandler {
         Map<String, Sev> smp = applicationContext.getBeansOfType(Sev.class);
         Map<String, Cli> cmp = applicationContext.getBeansOfType(Cli.class);
 
-        if(rmp.isEmpty()) throw new LunaException("Luna: The registry tag is a need, check your xml please");
+
 
         if(cmp.isEmpty() && smp.isEmpty()) {
             throw new LunaException("Luna: The cli or sev the two tag must write one, check your xml please");
@@ -45,9 +49,11 @@ public class LunaXsdHandler {
             throw new LunaException("Luna: Only one sev tag can exist, check your xml please");
         }
 
+        //registry必须要
+        if(rmp.isEmpty()) throw new LunaException("Luna: The registry:address tag is a need, check your xml please");
+
         boolean isServerFlag = smp.isEmpty() ? false : true;
 
-        Registry ris = rmp.values().iterator().next();
 
         //server
         if(isServerFlag) {
@@ -57,18 +63,33 @@ public class LunaXsdHandler {
             if (LunaUtils.isBlank(port)) throw new LunaException("Luna: Port is a need");
         } else {
             //client
+
             serviceTimeoutMap = new HashMap<>();
-//            servicePathList = new ArrayList<>();
+            serviceUrlListMap = new HashMap<>();
+
             for (Cli c : cmp.values()) {
+
+                if(LunaUtils.isBlank(c.getService())) continue;
+
                 serviceTimeoutMap.put(c.getService(), c.getTimeout());
-//                servicePathList.add(c.getService());
+
+                if(LunaUtils.isNotBlank(c.getUrl())) {
+                    String[] urlArrays = LunaUtils.split(c.getUrl(), ",");
+                    serviceUrlListMap.put(c.getService(), Arrays.asList(urlArrays));
+                }
             }
+
         }
 
+
+
         //registry
+
+        if(rmp.size() > 1) throw new LunaException("Luna: The registry tag is repeat, check your xml please");
+
+        Registry ris = rmp.values().iterator().next();
         isRoundRobin = LunaUtils.isBlank(ris.getRoundRobin()) || !ris.getRoundRobin().equalsIgnoreCase("random") ? true : false;
         address = ris.getAddress();
-        if(LunaUtils.isBlank(address)) throw new LunaException("Luna: Address is a need");
 
         return isServerFlag;
     }
