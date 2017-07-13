@@ -29,7 +29,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
     }
 
     @Override
-    public void channelRead0(final ChannelHandlerContext ctx, final RpcRequest request) throws Exception {
+    public void channelRead0(final ChannelHandlerContext ctx, final RpcRequest request) {
         LunaConfigure.execuService.submit(() -> {
 //                System.out.println("Recevie=======>>" + request.getRequestId());
                 LOGGER.debug("Luna: Receive request " + request.getRequestId());
@@ -42,7 +42,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
                     response.setError(t.toString());
                     LOGGER.error("Luna: RPC Server handle request error", t);
                 }
-            /*try {//TODO 模拟处理延迟很久了
+            /*try {// 模拟处理延迟很久了
                 System.out.println("SendResponse sleep ===>>>");
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
@@ -56,6 +56,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
                 });
         });
     }
+
 
     private Object handle(RpcRequest request) throws Throwable {
 

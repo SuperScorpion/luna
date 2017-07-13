@@ -1,13 +1,16 @@
 package com.jy.luna.client.proxy;
 
-import com.jy.luna.client.ClientHandler;
 import com.jy.luna.client.ClientCoreProcessor;
+import com.jy.luna.client.ClientHandler;
 import com.jy.luna.client.RpcFuture;
 import com.jy.luna.protocol.RpcRequest;
+import com.jy.luna.stuff.common.LunaConfigure;
+import com.jy.luna.stuff.exception.LunaException;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by neo on 2017-06-25.
@@ -45,8 +48,27 @@ public class ProxyHandler implements InvocationHandler {
         request.setParameters(args);
 
 
+        int i = 1;
+        return recurseInvoker(request, i);//实现调用失败自动重新选择handler再调
+    }
+
+
+    private Object recurseInvoker(RpcRequest request, int i) throws ExecutionException, InterruptedException {
+
         ClientHandler handler = ClientCoreProcessor.getInstance().chooseHandler(cls.getName());
         RpcFuture rpcFuture = handler.channelWrite0(request);
-        return rpcFuture.get();
+
+        Object result = rpcFuture.get();
+
+        if(result.equals(LunaConfigure.FUTURE_ERROR_MSG)) {
+            if(i < LunaConfigure.FUTURE_ERROR_TIMES) {
+                i++;
+                recurseInvoker(request, i);
+            } else {
+                throw new LunaException("Luna: "+ request.getClassName() + "(" + request.getMethodName() + ") it has failed "+ i + " times to get result, Luna has shutdown it now.");
+            }
+        }
+
+        return result;
     }
 }

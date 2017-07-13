@@ -2,6 +2,7 @@ package com.jy.luna.client;
 
 import com.jy.luna.protocol.RpcRequest;
 import com.jy.luna.protocol.RpcResponse;
+import com.jy.luna.stuff.common.LunaConfigure;
 import com.jy.luna.stuff.common.LunaUtils;
 import com.jy.luna.stuff.exception.LunaException;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ public class RpcFuture implements Future<Object> {
     private long responseTimeThreshold;//timeout
 
     private boolean isDone = false;
+
     private ReentrantLock lock = new ReentrantLock();
     private Condition lockCondi = lock.newCondition();
 
@@ -45,6 +47,7 @@ public class RpcFuture implements Future<Object> {
         try {
             if(!isDone()) lockCondi.await();//没返回之前一直阻塞调用线程
             if (response != null) {
+                if(response.isError()) return LunaConfigure.FUTURE_ERROR_MSG;///有错误则返回
                 return response.getResult();
             } else {
                 return null;
@@ -84,6 +87,8 @@ public class RpcFuture implements Future<Object> {
     public boolean cancel(boolean mayInterruptIfRunning) {
         throw new UnsupportedOperationException();
     }
+
+
 
     public void setResponse0(RpcResponse response) {
         lock.lock();
