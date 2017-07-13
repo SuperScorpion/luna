@@ -7,12 +7,6 @@ import org.springframework.context.ApplicationContextAware;
 
 /**
  * Created by neo on 2017/6/27.
- * C:
- * registrAddress
- * timeout
- * S:
- * registrAddress
- * port
  */
 public class Registry implements ApplicationContextAware {
 
@@ -20,8 +14,18 @@ public class Registry implements ApplicationContextAware {
 
     private String address;
 
+    private String serialization;
+
     private String roundRobin;
 
+
+    public String getSerialization() {
+        return serialization;
+    }
+
+    public void setSerialization(String serialization) {
+        this.serialization = serialization;
+    }
 
     public String getRoundRobin() {
         return roundRobin;

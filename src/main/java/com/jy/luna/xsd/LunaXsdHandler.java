@@ -23,6 +23,8 @@ public class LunaXsdHandler {
 
     public static String address;//Registry
 
+    public static String serialization = "protostuff";//Registry
+
     public static Boolean isRoundRobin = true;//Registry
 
 //    public static List<String> servicePathList;//Cli
@@ -89,6 +91,7 @@ public class LunaXsdHandler {
 
         Registry ris = rmp.values().iterator().next();
         isRoundRobin = LunaUtils.isBlank(ris.getRoundRobin()) || !ris.getRoundRobin().equalsIgnoreCase("random") ? true : false;
+        serialization = LunaUtils.isBlank(ris.getSerialization()) || !ris.getSerialization().equalsIgnoreCase("kryo") ? "protostuff" : "kryo";
         address = ris.getAddress();
 
         return isServerFlag;

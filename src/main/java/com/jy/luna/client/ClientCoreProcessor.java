@@ -117,7 +117,7 @@ public class ClientCoreProcessor {
 
             ClientManager cmr = clientManagerMap.get(serviceFullName);
 
-            cmr.getServiceHandlerList().clear();//delete
+            if(cmr != null && cmr.getServiceHandlerList() != null) cmr.getServiceHandlerList().clear();//delete
         }
     }
 
@@ -158,7 +158,7 @@ public class ClientCoreProcessor {
 
                 if(addArra[0].trim().equals("127.0.0.1") || addArra[0].trim().equals("localhost")) addArra[0] = LunaUtils.gainLocalHostIp();///modify by neo on 2017.07.11
 
-                InetSocketAddress isa = new InetSocketAddress(addArra[0], Integer.parseInt(addArra[1]));
+                InetSocketAddress isa = new InetSocketAddress(addArra[0].trim(), Integer.parseInt(addArra[1].trim()));
 
                 resultList.add(isa);
             }

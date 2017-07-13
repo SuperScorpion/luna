@@ -1,5 +1,6 @@
 package com.jy.luna.protocol;
 
+import com.jy.luna.xsd.LunaXsdHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -28,7 +29,9 @@ public class RpcDecoder extends ByteToMessageDecoder {
         byte[] data = new byte[dataLength];
         in.readBytes(data);
 
-        Object obj = SerializationUtil.deserialize(data, genericClass);
+        Object obj = LunaXsdHandler.serialization.equals("kryo") ? KryoSerializeUtil.readObjectFromByteArray(data, genericClass) : ProtoStuffSerializeUtil.deserialize(data, genericClass);
+//        Object obj = ProtoStuffSerializeUtil.deserialize(data, genericClass);
+
         out.add(obj);
     }
 

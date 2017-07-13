@@ -25,6 +25,7 @@
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:ID" use="optional"/>
             <xsd:attribute name="address" type="xsd:string" use="optional"/>
+            <xsd:attribute name="serialization" type="xsd:string" use="optional"/>
             <xsd:attribute name="isRoundRobin" type="xsd:string" use="optional"/>
         </xsd:complexType>
     </xsd:element>

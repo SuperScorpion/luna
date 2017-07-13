@@ -24,8 +24,11 @@ public class LunaSpringReform {
 
 		if(isServer) {
 			if (LunaUtils.isBlank(LunaXsdHandler.address)) {//直连方式sev
+				//// TODO: 2017/7/12
 				LOGGER.debug("Luna: Server start direct connection mode.");
+				new ServerStuff(null, applicationContext).connectServerProcessor();//sev
 			} else {
+				LOGGER.debug("Luna: Client try to add zookeeper server node.");
 				new ServerStuff(new ServiceRegistry(), applicationContext).connectServerProcessor();//sev
 			}
 		} else {
@@ -45,6 +48,7 @@ public class LunaSpringReform {
 					}
 				}
 			} else {//zookeeper 方式cli
+				LOGGER.debug("Luna: Server try to add zookeeper server node.");
 				new ServiceDiscovery(csf);
 			}
 		}
