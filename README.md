@@ -22,13 +22,12 @@ consumer<br/>
 <luna:cli id="xx" service="com.xx.xx.service.BxxService"/><!--service1路径名称--><br/>
 <luna:cli id="xxx" service="com.xx.xx.service.BxxxService"/><!--service2路径名称--><br/>
 <br/>
-如果需要跳过zookeeper注册中心
-consumer端直接添加url属性不填写address属性 并且 provider端不填写address属性即可.
+如果需要跳过zookeeper注册中心 consumer端直接添加url属性不填写address属性 并且 provider端不填写address属性即可.</br>
 <br/>
-serialization可以选择序列化方式 目前提供两种 1.protostuff(默认)2.kryo
+serialization可以选择序列化方式 目前提供两种 1.protostuff(默认)2.kryo<br/>
 <br/>
-监控中心待完善.
-
+监控中心待完善.</br>
+<br/>
 遇到问题
 1.序列化框架protostuff的问题 Object[null, xxx] -> Object[xxx].<br/>
 2.序列化protostuff的问题 还原序列化的时候 Objenesis 会把实体类里的属性默认值加上.<br/>
