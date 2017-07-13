@@ -23,9 +23,10 @@ consumer<br/>
 <luna:cli id="xxx" service="com.xx.xx.service.BxxxService"/><!--service2路径名称--><br/>
 <br/>
 如果需要跳过zookeeper注册中心
-consumer端直接添加url属性不填写address属性即可.
-provider端不填写address属性即可.
-
+consumer端直接添加url属性不填写address属性 并且 provider端不填写address属性即可.
+<br/>
+serialization可以选择序列化方式 目前提供两种 1.protostuff(默认)2.kryo
+<br/>
 监控中心待完善.
 
 遇到问题
