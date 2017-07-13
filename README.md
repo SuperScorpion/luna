@@ -1,5 +1,5 @@
 # luna
-rpc
+
 基本上拥有dubbo基本核心功能 序列化使用protostuff 传输层使用netty 注册中心使用zookeeper.
 1. 透明化的远程方法调用，就像调用本地方法一样调用远程方法，只需简单配置，没有任何API侵入。(比dubbo更简洁)
 2. 软负载均衡及容错机制，可在内网替代F5等硬件负载均衡器，降低成本，减少单点。(负载均衡暂时实现轮训和随机)
@@ -28,7 +28,7 @@ serialization可以选择序列化方式 目前提供两种 1.protostuff(默认)
 <br/>
 监控中心待完善.</br>
 <br/>
-遇到问题
+遇到问题<br/>
 1.序列化框架protostuff的问题 Object[null, xxx] -> Object[xxx].<br/>
 2.序列化protostuff的问题 还原序列化的时候 Objenesis 会把实体类里的属性默认值加上.<br/>
 3.lock的condition await signalall 必须持有资源锁才能有效.<br/>
