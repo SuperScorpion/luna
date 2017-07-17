@@ -34,5 +34,4 @@ serialization可以选择序列化方式 目前提供两种 1.protostuff(默认)
 3.lock的condition await signalall 必须持有资源锁才能有效.<br/>
 4.idea的断点会让zookeeper 产生ConnectionLossException.<br/>
 5.spring自定义标签id如何去掉.<br/>
-6.client端添加了shutdownGracefully channel.writeAndFlush(request) 时会报 netty event executor terminated(exception)<br/>
-7.netty连接不了此localhost或者127.0.0.1地址.
+6.netty连接不了此localhost或者127.0.0.1地址.
