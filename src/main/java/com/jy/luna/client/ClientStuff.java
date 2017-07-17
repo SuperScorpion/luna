@@ -56,7 +56,7 @@ public class ClientStuff {
     public void connectServerProcessor(InetSocketAddress remotePeer, String serviceFullName) throws Exception {
         LunaConfigure.execuService.submit(() -> {
             Bootstrap b = new Bootstrap();
-//            try {
+            try {
                 b.group(eventLoopGroup).channel(NioSocketChannel.class).handler(
                         new ChannelInitializer() {
                             @Override
@@ -68,7 +68,9 @@ public class ClientStuff {
                                 cp.addLast(new ClientHandler());
                             }
                         }
-                ).connect(remotePeer).addListener(
+                );
+
+            ChannelFuture f = b.connect(remotePeer).addListener(
                         new ChannelFutureListener() {
                             @Override
                             public void operationComplete(final ChannelFuture channelFuture) throws Exception {
@@ -85,18 +87,18 @@ public class ClientStuff {
                                 }
                             }
                         }
-                );
+                ).sync();
 
 
             /*why i add this code then channel.writeAndFlush(request) will give me --- netty event executor terminated(exception)
-            is it shutdown now?*/
+            is it shutdown now?
+            because i use the same eventLoopGroup to connect server*/
 
-//                f.channel().closeFuture().sync();// Wait until the connection is closed.
+            f.channel().closeFuture().sync();// Wait until the connection is closed.
 
-            /*} catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
-            } finally {
-//                System.out.println("shutdown client gracef");
+            }/* finally {
                 eventLoopGroup.shutdownGracefully();
             }*/
         });
