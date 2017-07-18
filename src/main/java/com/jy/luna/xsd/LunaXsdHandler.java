@@ -42,13 +42,14 @@ public class LunaXsdHandler {
         Map<String, Cli> cmp = applicationContext.getBeansOfType(Cli.class);
 
 
-
         if(cmp.isEmpty() && smp.isEmpty()) {
             throw new LunaException("Luna: The cli or sev the two tag must write one, check your xml please");
         } else if(!cmp.isEmpty() && !smp.isEmpty()) {
             throw new LunaException("Luna: Only one tag can exist, check your xml please");
         } else if(smp.size() > 1 && cmp.size() == 0) {
             throw new LunaException("Luna: Only one sev tag can exist, check your xml please");
+        } else {
+            //do nothing
         }
 
         //registry必须要
@@ -64,29 +65,27 @@ public class LunaXsdHandler {
             port = sev.getPort();
             if (LunaUtils.isBlank(port)) throw new LunaException("Luna: Port is a need");
         } else {
-            //client
 
+            //client
             serviceTimeoutMap = new HashMap<>();
             serviceUrlListMap = new HashMap<>();
 
             for (Cli c : cmp.values()) {
 
-                if(LunaUtils.isBlank(c.getService())) continue;
+                if(LunaUtils.isNotBlank(c.getService())) {
 
-                serviceTimeoutMap.put(c.getService(), c.getTimeout());
+                    serviceTimeoutMap.put(c.getService(), c.getTimeout());
 
-                if(LunaUtils.isNotBlank(c.getUrl())) {
-                    String[] urlArrays = LunaUtils.split(c.getUrl(), ",");
-                    serviceUrlListMap.put(c.getService(), Arrays.asList(urlArrays));
+                    if (LunaUtils.isNotBlank(c.getUrl())) {
+
+                        String[] urlArrays = LunaUtils.split(c.getUrl(), ",");
+                        serviceUrlListMap.put(c.getService(), Arrays.asList(urlArrays));
+                    }
                 }
             }
-
         }
 
-
-
         //registry
-
         if(rmp.size() > 1) throw new LunaException("Luna: The registry tag is repeat, check your xml please");
 
         Registry ris = rmp.values().iterator().next();

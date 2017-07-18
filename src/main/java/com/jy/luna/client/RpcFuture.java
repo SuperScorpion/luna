@@ -47,10 +47,13 @@ public class RpcFuture implements Future<Object> {
         try {
             if(!isDone()) lockCondi.await();//没返回之前一直阻塞调用线程
             if (response != null) {
-                if(response.isError()) return LunaConfigure.FUTURE_ERROR_MSG;///有错误则返回
-                return response.getResult();
+                if(response.isError()) {
+                    return LunaConfigure.FUTURE_ERROR_MSG;///有错误则返回
+                } else {
+                    return response.getResult();
+                }
             } else {
-                return null;
+                throw new LunaException("Luna: The future response is null");
             }
         } finally {
             lock.unlock();
@@ -69,7 +72,7 @@ public class RpcFuture implements Future<Object> {
                     return null;
                 }
             } else {
-                throw new LunaException("Timeout exception. Request id: " + request.getRequestId()
+                throw new LunaException("Luna: Timeout exception. Request id: " + request.getRequestId()
                         + ". Request class name: " + request.getClassName()
                         + ". Request method: " + request.getMethodName());
             }
@@ -98,8 +101,11 @@ public class RpcFuture implements Future<Object> {
             if(lock.getWaitQueueLength(lockCondi) > 0) lockCondi.signalAll();//唤醒所有等待结果的线程
 
             long responseTime = System.currentTimeMillis() - startTime;
-            if (responseTime > responseTimeThreshold)
-                LOGGER.warn("Luna: Server response time is too slow. Request id = " + response.getRequestId() + ". Response Time = " + responseTime + "ms" + ". The responseTimeThreshold = " + responseTimeThreshold);
+            if (responseTime > responseTimeThreshold) {
+                LOGGER.warn("Luna: Server response time is too slow. Request id = "
+                        + response.getRequestId() + ". Response Time = "
+                        + responseTime + "ms" + ". The responseTimeThreshold = " + responseTimeThreshold);
+            }
         } finally {
             lock.unlock();
         }

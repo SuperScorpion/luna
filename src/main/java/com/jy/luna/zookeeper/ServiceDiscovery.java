@@ -4,6 +4,7 @@ import com.jy.luna.client.ClientCoreProcessor;
 import com.jy.luna.client.ClientStuff;
 import com.jy.luna.stuff.common.LunaConfigure;
 import com.jy.luna.stuff.common.LunaUtils;
+import com.jy.luna.stuff.exception.LunaException;
 import com.jy.luna.xsd.LunaXsdHandler;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -23,60 +24,34 @@ public class ServiceDiscovery {
 
     private CountDownLatch latch = new CountDownLatch(1);
 
-//    private volatile List<String> dataList = new ArrayList<>();
-
     private ClientStuff clientStuff;
 
-    private String registryAddress;
-
     private ZooKeeper zookeeper;
+
 
     public ServiceDiscovery(ClientStuff clientStuff) {
 
         this.clientStuff = clientStuff;
 
-        this.registryAddress = LunaXsdHandler.address;
-
         zookeeper = connectServer();
+
         if (zookeeper != null) {
             watchTopNode(zookeeper);
+        } else {
+            throw new LunaException("Luna: The zookeeper in discovery is null");
         }
     }
-
-   /* public String discover() {
-        String data = null;
-        int size = dataList.size();
-
-        for(String d : dataList) {
-            System.out.println("=======" + d);
-        }
-
-        if (size > 0) {
-            if (size == 1) {
-                data = dataList.get(0);
-                LOGGER.debug("Luna: using only one data: {}", data);
-            } else {
-                data = dataList.get(ThreadLocalRandom.current().nextInt(size));
-                LOGGER.debug("Luna: using random data: {}", data);
-            }
-        }
-
-        *//*try {//模拟session保持
-            Thread.sleep(70000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*//*
-        return data;
-    }*/
 
     private ZooKeeper connectServer() {
         ZooKeeper zk = null;
         try {
-            zk = new ZooKeeper(registryAddress, LunaConfigure.ZK_SESSION_TIMEOUT, (WatchedEvent event) -> {
+            zk = new ZooKeeper(LunaXsdHandler.address, LunaConfigure.ZK_SESSION_TIMEOUT, (WatchedEvent event) -> {
                     if (event.getState() == Watcher.Event.KeeperState.SyncConnected) {
                         latch.countDown();
                     } else if(event.getState() == Watcher.Event.KeeperState.Expired) {
                         LOGGER.warn("Luna: The client zookeeper session is expired");
+                    } else {
+                        //do nothing
                     }
             });
             latch.await();

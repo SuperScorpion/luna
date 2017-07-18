@@ -62,7 +62,7 @@ public class ProxyHandler implements InvocationHandler {
 
         if(result.equals(LunaConfigure.FUTURE_ERROR_MSG)) {
             if(i < LunaConfigure.FUTURE_ERROR_TIMES) {
-                i++;
+                i += 1;
                 recurseInvoker(request, i);
             } else {
                 throw new LunaException("Luna: "+ request.getClassName() + "(" + request.getMethodName() + ") it has failed "+ i + " times to get result, Luna has shutdown it now.");

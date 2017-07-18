@@ -56,11 +56,6 @@ public class ClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
         ctx.close();
     }
 
-
-    public void close() {
-        channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
-    }
-
     public RpcFuture channelWrite0(RpcRequest request) throws ExecutionException, InterruptedException {
         //设置service请求超时时间由用户决定的
         Map<String, String> stMap = LunaXsdHandler.serviceTimeoutMap;
@@ -73,6 +68,11 @@ public class ClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
         rpcFutureMap.put(request.getRequestId(), rpcFuture);
         channel.writeAndFlush(request);
         return rpcFuture;
+    }
+
+
+    public void close() {
+        channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
     }
 
 }

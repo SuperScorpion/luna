@@ -2,6 +2,7 @@ package com.jy.luna.zookeeper;
 
 import com.jy.luna.stuff.common.LunaConfigure;
 import com.jy.luna.stuff.common.LunaUtils;
+import com.jy.luna.stuff.exception.LunaException;
 import com.jy.luna.xsd.LunaXsdHandler;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
@@ -19,23 +20,19 @@ public class ServiceRegistry {
 
     private CountDownLatch latch = new CountDownLatch(1);
 
-    private String registryAddress;
-
-//    private ZooKeeper zk;
-
 
     public ServiceRegistry() {
 
-        this.registryAddress = LunaXsdHandler.address;
     }
 
     public void register(Map<String, Object> serviceBeanMap, String data) {
         if (data != null && LunaUtils.isNotBlank(data)) {
-//            zk = zk == null ? connectServer() : zk;
             ZooKeeper zk = connectServer();
             if (zk != null) {
                 AddRootNode(zk); // Add root node if not exist
                 createServiceNode(zk, serviceBeanMap, data);
+            } else {
+                throw new LunaException("Luna: The zookeeper in discovery is null");
             }
         }
     }
@@ -43,11 +40,13 @@ public class ServiceRegistry {
     private ZooKeeper connectServer() {
         ZooKeeper zk = null;
         try {
-            zk = new ZooKeeper(registryAddress, LunaConfigure.ZK_SESSION_TIMEOUT, (WatchedEvent event) -> {
+            zk = new ZooKeeper(LunaXsdHandler.address, LunaConfigure.ZK_SESSION_TIMEOUT, (WatchedEvent event) -> {
                     if (event.getState() == Watcher.Event.KeeperState.SyncConnected) {
                         latch.countDown();
                     } else if(event.getState() == Watcher.Event.KeeperState.Expired) {
                         LOGGER.warn("Luna: The server zookeeper session is expired");
+                    } else {
+                        //do nothing
                     }
             });
             latch.await();
@@ -104,17 +103,4 @@ public class ServiceRegistry {
         }
     }
 
-    /*public static void main(String[] args) throws InterruptedException {
-
-        LunaXsdHandler.address = "localhost:2181";
-
-        ServiceRegistry sry = new ServiceRegistry();
-        System.out.println("开始睡眠的热");
-        Thread.currentThread().sleep(7000);
-        System.out.println("结束睡眠的人");
-
-
-        ServiceDiscovery sdc = new ServiceDiscovery(null);
-//        sdc.discover();
-    }*/
 }

@@ -25,9 +25,10 @@ import java.util.Set;
  */
 public class ClientStuff {
 
-
     public ClientStuff initProxy2Spring(ApplicationContext applicationContext) {
+
         Set<String> servicePathList = LunaXsdHandler.serviceTimeoutMap.keySet();
+
         if(servicePathList != null && !servicePathList.isEmpty()) {
             for(String se : servicePathList) {
 
@@ -36,8 +37,13 @@ public class ClientStuff {
 
                 try {
                     clz = Class.forName(se);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                try {
                     pox =  ProxyFactory.createProxy(clz);
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -47,9 +53,9 @@ public class ClientStuff {
                 beanFactory.registerSingleton(LunaUtils.lowcaseFirst(clz.getSimpleName()), pox);
             }
         }
+
         return this;
     }
-
 
     EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
 
@@ -78,12 +84,6 @@ public class ClientStuff {
 
                                     ClientHandler handler = channelFuture.channel().pipeline().get(ClientHandler.class);
                                     ClientCoreProcessor.getInstance().addHandler(handler, serviceFullName);
-
-                                    /*RpcRequest rrqt = new RpcRequest();
-                                    rrqt.setRequestId("123456789");
-                                    RpcFuture rpcFuture = handler.channelWrite0(rrqt);*/
-
-//                                    Configure.execuService.submit(new Runnana(rpcFuture));//for test
                                 }
                             }
                         }
@@ -104,31 +104,4 @@ public class ClientStuff {
         });
     }
 
-    /*public class Runnana implements Runnable {
-
-        private RpcFuture rpcFuture;
-        public Runnana(RpcFuture p) {
-            this.rpcFuture = p;
-        }
-        @Override
-        public void run() {
-            try {
-
-                System.out.println("333=========>>" + rpcFuture.get());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
-    /*public static void main(String[] args) {
-
-        ClientStuff cstf = new ClientStuff();
-        try {
-            cstf.connectServerProcessor(new InetSocketAddress("localhost", 3333));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }*/
 }

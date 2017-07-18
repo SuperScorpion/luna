@@ -154,13 +154,16 @@ public class ClientCoreProcessor {
 
                 String[] addArra = address.split(":");
 
-                if (addArra.length != 2) continue;
+                if (addArra.length == 2) {
 
-                if(addArra[0].trim().equals("127.0.0.1") || addArra[0].trim().equals("localhost")) addArra[0] = LunaUtils.gainLocalHostIp();///modify by neo on 2017.07.11
+                    if (addArra[0].trim().equals("127.0.0.1") || addArra[0].trim().equals("localhost")) {
+                        addArra[0] = LunaUtils.gainLocalHostIp();///modify by neo on 2017.07.11
+                    }
 
-                InetSocketAddress isa = new InetSocketAddress(addArra[0].trim(), Integer.parseInt(addArra[1].trim()));
+                    InetSocketAddress isa = new InetSocketAddress(addArra[0].trim(), Integer.parseInt(addArra[1].trim()));
 
-                resultList.add(isa);
+                    resultList.add(isa);
+                }
             }
         }
 

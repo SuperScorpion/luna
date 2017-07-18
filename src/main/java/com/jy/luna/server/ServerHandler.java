@@ -31,7 +31,6 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
     @Override
     public void channelRead0(final ChannelHandlerContext ctx, final RpcRequest request) {
         LunaConfigure.execuService.submit(() -> {
-//                System.out.println("Recevie=======>>" + request.getRequestId());
                 LOGGER.debug("Luna: Receive request " + request.getRequestId());
                 RpcResponse response = new RpcResponse();
                 response.setRequestId(request.getRequestId());

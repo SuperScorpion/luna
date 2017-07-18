@@ -7,18 +7,6 @@ import java.lang.reflect.Proxy;
  */
 public class ProxyFactory {
 
-    /*private Class<T> objClass;
-
-    public ProxyFactory(Class<T> clz) {
-        this.objClass = clz;
-    }*/
-
-    /*public T process() throws Exception {
-
-        //创建代理，调用服务
-       return (T) ProxyFactory.createProxy(objClass);
-    }*/
-
     public static Object createProxy(Class<?> objClass) throws Exception {
 
         //创建InvocationHandler
