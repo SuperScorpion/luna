@@ -13,7 +13,6 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
@@ -67,14 +66,14 @@ public class ClientStuff {
                         new ChannelInitializer() {
                             @Override
                             protected void initChannel(Channel socketChannel) throws Exception {
-                                ChannelPipeline cp = socketChannel.pipeline();
-                                cp.addLast(new LengthFieldBasedFrameDecoder(65537, 0, 4, 0, 0));
-                                cp.addLast(new RpcEncoder(RpcRequest.class));
-                                cp.addLast(new RpcDecoder(RpcResponse.class));
-                                cp.addLast(new ClientHandler());
+                                socketChannel.pipeline()
+//                                    .addLast(new LengthFieldBasedFrameDecoder(65537, 0, 4, 0, 0))
+                                    .addLast(new RpcEncoder(RpcRequest.class))
+                                    .addLast(new RpcDecoder(RpcResponse.class))
+                                    .addLast(new ClientHandler());
                             }
                         }
-                );
+                )/*.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 6000)*/;
 
             ChannelFuture f = b.connect(remotePeer).addListener(
                         new ChannelFutureListener() {

@@ -17,7 +17,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.springframework.context.ApplicationContext;
 
 import java.util.HashMap;
@@ -66,10 +65,11 @@ public class ServerStuff {
                         new ChannelInitializer<SocketChannel>() {
                             @Override
                             public void initChannel(SocketChannel channel) throws Exception {
-                                channel.pipeline().addLast(new LengthFieldBasedFrameDecoder(65537, 0, 4, 0, 0))
-                                        .addLast(new RpcEncoder(RpcResponse.class))
-                                        .addLast(new RpcDecoder(RpcRequest.class))
-                                        .addLast(new ServerHandler(serviceBeanMap));
+                                channel.pipeline()
+//                                  .addLast(new LengthFieldBasedFrameDecoder(65537, 0, 4, 0, 0))
+                                    .addLast(new RpcEncoder(RpcResponse.class))
+                                    .addLast(new RpcDecoder(RpcRequest.class))
+                                    .addLast(new ServerHandler(serviceBeanMap));
                             }
                         }
                 ).option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true);
