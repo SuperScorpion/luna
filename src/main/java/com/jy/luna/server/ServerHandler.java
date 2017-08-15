@@ -2,7 +2,6 @@ package com.jy.luna.server;
 
 import com.jy.luna.protocol.RpcRequest;
 import com.jy.luna.protocol.RpcResponse;
-import com.jy.luna.stuff.common.LunaConfigure;
 import com.jy.luna.stuff.exception.LunaException;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -30,17 +29,17 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     @Override
     public void channelRead0(final ChannelHandlerContext ctx, final RpcRequest request) {
-        LunaConfigure.execuService.submit(() -> {
-                LOGGER.debug("Luna: Receive request " + request.getRequestId());
-                RpcResponse response = new RpcResponse();
-                response.setRequestId(request.getRequestId());
-                try {
-                    Object result = handle(request);
-                    response.setResult(result);
-                } catch (Throwable t) {
-                    response.setError(t.toString());
-                    LOGGER.error("Luna: RPC Server handle request error", t);
-                }
+//        LunaConfigure.execuService.submit(() -> {
+            LOGGER.debug("Luna: Receive request " + request.getRequestId());
+            RpcResponse response = new RpcResponse();
+            response.setRequestId(request.getRequestId());
+            try {
+                Object result = handle(request);
+                response.setResult(result);
+            } catch (Throwable t) {
+                response.setError(t.toString());
+                LOGGER.error("Luna: RPC Server handle request error", t);
+            }
             /*try {// 模拟处理延迟很久了
                 System.out.println("SendResponse sleep ===>>>");
                 Thread.sleep(5000);
@@ -48,12 +47,12 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
                 e.printStackTrace();
             }*/
             ctx.writeAndFlush(response).addListener((ChannelFuture channelFuture) -> {
-//                    @Override
-//                    public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        LOGGER.debug("Luna: Send response for request " + request.getRequestId());
-//                    }
-                });
-        });
+//                @Override
+//                public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                    LOGGER.debug("Luna: Send response for request " + request.getRequestId());
+//                }
+            });
+//        });
     }
 
 
