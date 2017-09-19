@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by neo on 2017-06-25.
@@ -58,9 +59,11 @@ public class ProxyHandler implements InvocationHandler {
         ClientHandler handler = ClientCoreProcessor.getInstance().chooseHandler(cls.getName());
         RpcFuture rpcFuture = handler.channelWrite0(request);
 
-        Object result = rpcFuture.get();
+        //do other things by future mode
 
-        if(result.equals(LunaConfigure.FUTURE_ERROR_MSG)) {
+        Object result = rpcFuture.get(rpcFuture.getTimeOut(), TimeUnit.MILLISECONDS);//time out process
+
+        if(LunaConfigure.FUTURE_ERROR_MSG.equals(result)) {
             if(i < LunaConfigure.FUTURE_ERROR_TIMES) {
                 i += 1;
                 recurseInvoker(request, i);
