@@ -6,8 +6,6 @@ import com.jy.luna.stuff.common.LunaConfigure;
 import com.jy.luna.stuff.common.LunaUtils;
 import com.jy.luna.stuff.exception.LunaException;
 import com.jy.luna.xsd.LunaXsdHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -79,10 +77,19 @@ public class RpcFuture implements Future<Object> {
             boolean success = lockCondition.await(timeout, unit);
             if(success) {
                 if (response != null) {
+                    if(response.isError()) {
+                        return LunaConfigure.FUTURE_ERROR_MSG;///有错误则返回
+                    } else {
+                        return response.getResult();
+                    }
+                } else {
+                    throw new LunaException("Luna: The future response is null");
+                }
+                /*if (response != null) {
                     return response.getResult();
                 } else {
                     return null;
-                }
+                }*/
             } else {
                 throw new LunaException("Luna: Timeout exception. Request id: " + request.getRequestId()
                         + ". Request class name: " + request.getClassName()
