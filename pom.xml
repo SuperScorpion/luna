@@ -120,30 +120,6 @@
                 </configuration>
             </plugin>
 
-            <!-- 打包jar文件时，配置manifest文件，加入lib包的jar依赖 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <archive>
-                        <!-- 清单文件 -->
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <!--<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>-->
-                            <!--<mainClass>com.jy.validator.validator.AnnotationHandler</mainClass>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>-->
-                        </manifest>
-                        <!-- 给清单文件添加键值对(配置文件外置) -->
-                        <!--<manifestEntries>
-                            <Class-Path>config/</Class-Path>
-                        </manifestEntries>-->
-                    </archive>
-                    <classesDirectory>
-                    </classesDirectory>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>
